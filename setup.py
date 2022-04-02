@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="dbhelp",
+    name="pydb",
     version="1.0.0",
     author='Aleksandr Shabelsky',
     author_email='a.shabelsky@gmail.com',
