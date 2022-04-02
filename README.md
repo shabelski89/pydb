@@ -17,7 +17,14 @@ pyparsing>=3.0.7
 tomli>=2.0.1
 ```
 
-# Help
+# Build
+
+```shell
+python -m pip install --upgrade build
+```
+
+
+# Usage
 
 ```python
 from pydb.dbms import UniDbConnector
