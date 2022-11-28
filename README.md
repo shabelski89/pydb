@@ -1,8 +1,6 @@
 # About
 Универсальный клиент выполнения SQL скрипта в СУБД MYSQL, ORACLE, POSTGRES с экспортом результатов в CSV файл.
 
-Разочарован в rlwrap м SQLPlus. :sad: 
-
 # Requirements
 
 `python>=3.7`

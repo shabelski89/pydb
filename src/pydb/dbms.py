@@ -63,9 +63,9 @@ class UniDbConnector:
         "dbms": DBMS Vendor ['mysql', 'oracle', 'postgres']
         }
         """
-        self.config = config
-        self.dbms = config.pop('dbms')
-        self.db = config.pop('database')
+        self.config: dict = config
+        self.dbms: str = config.pop('dbms')
+        self.db: str = config.pop('database')
         self.__connect = getattr(self, f"get_connection_{self.dbms}")()
 
     def __enter__(self):
@@ -74,7 +74,7 @@ class UniDbConnector:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.__connect.close()
 
-    def get_connection_postgres(self):
+    def __get_connection_postgres(self):
         """Connect to a Postgres database."""
         self.config['dbname'] = self.db
         try:
@@ -84,7 +84,7 @@ class UniDbConnector:
         except psycopg2.DatabaseError as Error:
             raise DbException(message=Error)
 
-    def get_connection_mysql(self):
+    def __get_connection_mysql(self):
         """Connect to a MySQL database."""
         self.config['db'] = self.db
         try:
@@ -94,7 +94,7 @@ class UniDbConnector:
         except pymysql.DatabaseError as Error:
             raise DbException(message=Error)
 
-    def get_connection_oracle(self):
+    def __get_connection_oracle(self):
         """Connect to a Oracle database."""
         try:
             if sys.platform.startswith("linux"):
@@ -132,12 +132,15 @@ class UniDbConnector:
             logger.exception(Error)
             raise DbException(message=Error)
 
-    def execute(self, query: str, params: tuple = None):
-        """Method to execute sql query"""
+    def _execute(self, query: str, params: tuple = None):
+        """
+        Method to execute sql query
+        :raise cx_Oracle.DatabaseError, pymysql.DatabaseError, psycopg2.DatabaseError: raised when any DB error
+        """
         try:
             cursor = self.__connect.cursor()
             query = query_cleaner(q=query)
-            logger.debug(query)
+            logger.debug(f'SqlQuery:\n{query}')
             if params:
                 cursor.execute(query, params)
             else:
@@ -147,19 +150,29 @@ class UniDbConnector:
         return cursor
 
     def fetchmany(self, query: str, params: tuple = None, size=10000) -> tuple:
-        """Method to fetchmany data"""
-        cursor = self.execute(query=query, params=params)
+        """
+        Method to fetchmany data
+        :param query: sql query to execute
+        :param params: params in where clause
+        :param size: count rows to return
+        :return: yield tuple of query results
+        """
+        cursor = self._execute(query=query, params=params)
         while True:
             results = cursor.fetchmany(size)
             if not results:
                 break
             yield results
 
-    def fetchmany_er(self, query: str, params: tuple = None, size=10000):
+    def fetchmany_er(self, query: str, params: tuple = None, size=10000) -> ExecutionResponse:
         """
         Special method to fetchmany ExecutionResponse instance
+        :param query: sql query to execute
+        :param params: params in where clause
+        :param size: count rows to return
+        :return: yield ExecutionResponse of query results
         """
-        cursor = self.execute(query=query, params=params)
+        cursor = self._execute(query=query, params=params)
         while True:
             results = cursor.fetchmany(size)
             if not results:
@@ -168,14 +181,24 @@ class UniDbConnector:
             yield ExecutionResponse(result=results, header=header, count=cursor.rowcount)
 
     def fetchall(self, query: str, params: tuple = None) -> List[tuple]:
-        """Method to fetchall data"""
-        cursor = self.execute(query=query, params=params)
+        """
+        Method to fetchall data
+        :param query: sql query to execute
+        :param params: params in where clause
+        :return: List[tuple] of query results
+        """
+        cursor = self._execute(query=query, params=params)
         result = [row for row in cursor.fetchall()]
         return result
 
-    def fetchall_er(self, query: str, params: tuple = None):
-        """Special method to fetchall ExecutionResponse instance"""
-        cursor = self.execute(query=query, params=params)
+    def fetchall_er(self, query: str, params: tuple = None) -> List[ExecutionResponse]:
+        """
+        Special method to fetchall ExecutionResponse instance
+        :param query: sql query to execute
+        :param params: params in where clause
+        :return: List[ExecutionResponse] of query results
+        """
+        cursor = self._execute(query=query, params=params)
         header = tuple(desc[0] for desc in cursor.description)
         result = [ExecutionResponse(result=row, header=header, count=cursor.rowcount) for row in cursor.fetchall()]
         return result
