@@ -1,21 +1,17 @@
 # About
-Универсальный клиент выполнения SQL скрипта в СУБД MYSQL, ORACLE, POSTGRES с экспортом результатов в CSV файл.
+Universal python client for MYSQL, ORACLE, POSTGRES.
+
+### Features
+<ul>
+    <li>Inline CLI usage</li>
+    <li>Script usage</li>
+    <li>CSV Export</li>
+    <li>ZIP export result</li>
+</ul> 
 
 # Requirements
 
-`python>=3.7`
-
-```requirements.txt
-build==0.7.0
-colorama==0.4.4
-cx-Oracle==8.2.1
-packaging==21.3
-pep517==0.12.0
-psycopg2==2.9.1
-PyMySQL==1.0.2
-pyparsing==3.0.7
-tomli==2.0.1
-```
+Language: `python>=3.7`
 
 ```shell
 pip install -r requirements.txt
@@ -35,8 +31,21 @@ pip install pydb-x.y.z-py3-none-any.whl
 ```
 
 # Usage package
+### CLI example
+```shell
+python  dbclient.py -c "postgres://user:password@hostname:port/database"
+command> SELECT * FROM systems ORDER BY id;
++----+-----------------+------------+------------+
+| id | system          | system_key | system_eng |
++----+-----------------+------------+------------+
+| 1  | Анализаторы SNT | SNT        | None       |
+| 2  | Капкан          | KAPKAN     | None       |
+| 3  | Спайдер         | SPIDER     | SPIDER     |
+| 4  | Профит          | PROFIT     | PROFIT     |
++----+-----------------+------------+------------+
+```
 
-For example: direct usage past connection config and sql query into script
+### Script example
 
 ```python
 from pydb.exporter import Exporter
@@ -51,5 +60,4 @@ data = u.fetchall(query=q)
 
 e = Exporter(filename='data')
 e.to_csv(data=data)
-
 ```

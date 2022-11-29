@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pydb",
-    version="1.0.1",
+    version="1.2.2",
     author='Aleksandr Shabelsky',
     author_email='a.shabelsky@gmail.com',
     description="Oracle, Postgres, Mysql in one package",
