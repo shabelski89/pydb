@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pydb",
-    version="1.2.2",
+    version="1.2.4",
     author='Aleksandr Shabelsky',
     author_email='a.shabelsky@gmail.com',
-    description="Oracle, Postgres, Mysql in one package",
+    description="Light console client for Oracle, Postgres, Mysql",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="http://gitlab.seventest/sa/pydb",
@@ -23,5 +23,19 @@ setup(
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     python_requires=">=3.7",
-    install_requires=['PyMySQL', 'psycopg2', 'cx_Oracle'],
+    install_requires=[
+        "colorama==0.4.4",
+        "cx-Oracle==8.2.1",
+        "pep517==0.12.0",
+        "psycopg2==2.9.1",
+        "PyMySQL==1.0.2",
+        "pyparsing==3.0.7",
+        "tomli==2.0.1",
+        "prettytable==3.5.0",
+    ],
+    entry_points={
+        'console_scripts': [
+            'dbclient = pydb.dbclient:main',
+        ]
+    },
 )

@@ -1,10 +1,14 @@
 import os
 import sys
 import cmd
+import time
 import argparse
 from urllib.parse import urlparse
 from prettytable import from_db_cursor, PrettyTable
-from dbms import UniDbConnector
+try:
+    from dbms import UniDbConnector
+except ModuleNotFoundError:
+    from .dbms import UniDbConnector
 
 
 class SqlClient(cmd.Cmd):
@@ -18,13 +22,20 @@ class SqlClient(cmd.Cmd):
         self.do_execute(query=line)
 
     def do_execute(self, query: str, limit: int = 50) -> None:
-        table = self.execute(query=query, limit=limit)
-        print(table)
+        time_begin_execute = time.time()
+        cursor = self.execute(query=query, limit=limit)
+        if cursor:
+            table: PrettyTable = from_db_cursor(cursor)
+            table.align = "l"
+            time_of_execute = time.time() - time_begin_execute
+            print(table)
+            print(f'Rows: {cursor.rowcount}')
+            print(f'Time: {time_of_execute:.2f}')
 
     def help_execute(self):
-        print(f'{self.delimiter}\nType: "execute SELECT * FROM table;"')
+        print(f'{self.delimiter}\nType: SELECT * FROM table;')
 
-    def execute(self, query: str, limit: int) -> PrettyTable:
+    def execute(self, query: str, limit: int):
         """
         Method to fetchall data
         :param query: sql query to execute
@@ -47,9 +58,7 @@ class SqlClient(cmd.Cmd):
 
         try:
             cursor = self.db.execute(query=query)
-            table = from_db_cursor(cursor)
-            table.align = "l"
-            return table
+            return cursor
         except Exception as Error:
             print(f'{self.delimiter}\nError: {Error}')
 
@@ -62,7 +71,7 @@ class SqlClient(cmd.Cmd):
         print(f'{self.delimiter}\nInput exit or Ctrl+C to quit')
 
 
-if __name__ == '__main__':
+def main():
     desc_msg = os.path.basename(sys.argv[0])
     help_msg = f'{desc_msg} -c "postgres://user:password@hostname:port/database"'
     arg_parser = argparse.ArgumentParser(description=desc_msg, formatter_class=argparse.RawTextHelpFormatter)
@@ -86,3 +95,7 @@ if __name__ == '__main__':
         client.cmdloop()
     except KeyboardInterrupt:
         print('Goodbye!')
+
+
+if __name__ == '__main__':
+    main()
