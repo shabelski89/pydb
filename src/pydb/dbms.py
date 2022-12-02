@@ -1,9 +1,21 @@
 import os
 import sys
-import pymysql
-import psycopg2
-import cx_Oracle
 from typing import List, Optional, Tuple
+
+try:
+    import pymysql
+except ModuleNotFoundError as Error:
+    print(Error)
+
+try:
+    import psycopg2
+except ModuleNotFoundError as Error:
+    print(Error)
+
+try:
+    import cx_Oracle
+except ModuleNotFoundError as Error:
+    print(Error)
 
 
 def query_cleaner(q: str):

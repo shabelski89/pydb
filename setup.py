@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pydb",
-    version="1.2.4",
+    version="1.2.5",
     author='Aleksandr Shabelsky',
     author_email='a.shabelsky@gmail.com',
     description="Light console client for Oracle, Postgres, Mysql",
@@ -25,14 +25,20 @@ setup(
     python_requires=">=3.7",
     install_requires=[
         "colorama==0.4.4",
-        "cx-Oracle==8.2.1",
         "pep517==0.12.0",
-        "psycopg2==2.9.1",
-        "PyMySQL==1.0.2",
+        "wcwidth==0.2.5",
+        "zipp==3.6.0",
         "pyparsing==3.0.7",
-        "tomli==2.0.1",
-        "prettytable==3.5.0",
+        "tomli==1.2.3",
+        "typing_extensions==4.1.1",
+        "importlib-metadata==4.8.3",
+        "prettytable==2.5.0",
     ],
+    extras_require={
+        "oracle": ["cx-Oracle==8.2.1"],
+        "postgres": ["psycopg2==2.9.1"],
+        "mysql": ["PyMySQL==1.0.2"],
+    },
     entry_points={
         'console_scripts': [
             'dbclient = pydb.dbclient:main',
