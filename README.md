@@ -11,29 +11,50 @@ Universal python client for MYSQL, ORACLE, POSTGRES.
 
 # Requirements
 
-Language: `python>=3.7`
+Language: `python>=3.6`
+
+## Install requirements from internet
 
 ```shell
 pip install -r requirements.txt
 ```
 
-# Build
+## Install requirements from local
 
+1. Download package to specific platform
 ```shell
-python -m pip install --upgrade build
-python -m build
+pip download --platform=manylinux1_x86_64 -r requirements.txt
 ```
 
-# Install package
+2. Copy to destination and install from downloaded packages
+```shell
+pip install -r requirements.txt --no-index --find-links file:///path/to/packages
+```
+
+# Install pydb package
+
+### pip
+1. Download `pydb-x.y.z-py3-none-any.whl`
+2. Install use pip
 
 ```shell
 pip install pydb-x.y.z-py3-none-any.whl
 ```
 
+### setup
+1. Clone or copy repository
+2. Install
+
+```shell
+python3 setup.py install
+```
+
+> NOTE: `x`.`y`.`z` equal pydb package version.
+
 # Usage package
 ### CLI example
 ```shell
-python  dbclient.py -c "postgres://user:password@hostname:port/database"
+dbclient -c "postgres://user:password@hostname:port/database"
 command> SELECT * FROM systems ORDER BY id;
 +----+-----------------+------------+------------+
 | id | system          | system_key | system_eng |
@@ -60,4 +81,11 @@ data = u.fetchall(query=q)
 
 e = Exporter(filename='data')
 e.to_csv(data=data)
+```
+
+# Build
+
+```shell
+python -m pip install --upgrade build
+python -m build
 ```
