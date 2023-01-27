@@ -21,9 +21,9 @@ class SqlClient(cmd.Cmd):
     def default(self, line: str) -> None:
         self.do_execute(query=line)
 
-    def do_execute(self, query: str, limit: int = 50) -> None:
+    def do_execute(self, query: str) -> None:
         time_begin_execute = time.time()
-        cursor = self.execute(query=query, limit=limit)
+        cursor = self.execute(query=query)
         if cursor:
             table: PrettyTable = from_db_cursor(cursor)
             table.align = "l"
@@ -35,26 +35,12 @@ class SqlClient(cmd.Cmd):
     def help_execute(self):
         print(f'{self.delimiter}\nType: SELECT * FROM table;')
 
-    def execute(self, query: str, limit: int):
+    def execute(self, query: str):
         """
         Method to fetchall data
         :param query: sql query to execute
-        :param limit: limit in where clause
         :return: List[tuple] of query results
         """
-        limit_flag = False
-        limits_words = ['limit', 'fetch first', 'rownum <=']
-        for word in limits_words:
-            if word in query.lower():
-                limit_flag = True
-                break
-
-        if not limit_flag:
-            if self.db == 'oracle':
-                limit_clause = f' fetch first {limit} rows only'
-            else:
-                limit_clause = f' limit {limit}'
-            query += limit_clause
 
         try:
             cursor = self.db.execute(query=query)
@@ -72,9 +58,9 @@ class SqlClient(cmd.Cmd):
 
 
 def main():
-    desc_msg = os.path.basename(sys.argv[0])
-    help_msg = f'{desc_msg} -c "postgres://user:password@hostname:port/database"'
-    arg_parser = argparse.ArgumentParser(description=desc_msg, formatter_class=argparse.RawTextHelpFormatter)
+    program_name = os.path.basename(sys.argv[0])
+    help_msg = f'{program_name} -c "postgres://user:password@hostname:port/database"'
+    arg_parser = argparse.ArgumentParser(description=program_name, formatter_class=argparse.RawTextHelpFormatter)
     arg_parser.add_argument("-c", dest="connection", required=True, type=str, help=help_msg)
     args = arg_parser.parse_args()
 

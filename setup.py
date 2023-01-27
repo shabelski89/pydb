@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pydb",
-    version="1.2.5",
+    version="1.2.6",
     author='Aleksandr Shabelsky',
     author_email='a.shabelsky@gmail.com',
-    description="Light console client for Oracle, Postgres, Mysql",
+    description="Light CLI Oracle, Postgres, Mysql",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="http://gitlab.seventest/sa/pydb",
