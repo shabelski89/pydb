@@ -22,7 +22,7 @@ setup(
     ],
     package_dir={"": "src"},
     packages=find_packages(where="src"),
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     install_requires=[
         "colorama==0.4.4",
         "pep517==0.12.0",
