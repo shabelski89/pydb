@@ -1,0 +1,15 @@
+variables:
+  docker_image: pydb
+  docker_container: pydb
+
+stages:
+  - build
+
+build-package:
+  stage: build
+  allow_failure: false
+  script:
+    - docker build -t $docker_image .
+    - docker run --network host --name $docker_container $docker_image
+  after_script:
+    - docker rm $docker_container
