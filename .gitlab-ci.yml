@@ -14,7 +14,7 @@ build-package:
     - docker build -t $docker_image .
     - docker run --network host --name $docker_container $docker_image
   after_script:
-    - docker cp $docker_container:/app/dist/ ($CI_PROJECT_DIR)
+    - docker cp $docker_container:/app/dist/ $CI_PROJECT_DIR
     - docker rm $docker_container
   artifacts:
     expire_in: 1 week
