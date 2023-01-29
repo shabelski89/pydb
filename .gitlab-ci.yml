@@ -6,6 +6,8 @@ stages:
   - build
 
 build-package:
+  tags:
+    - shell
   stage: build
   allow_failure: false
   script:
@@ -13,3 +15,7 @@ build-package:
     - docker run --network host --name $docker_container $docker_image
   after_script:
     - docker rm $docker_container
+  artifacts:
+    paths:
+      - src/
+    expire_in: 3 month
