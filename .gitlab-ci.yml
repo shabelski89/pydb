@@ -17,5 +17,4 @@ build-package:
     - docker rm $docker_container
   artifacts:
     paths:
-      - src/
-    expire_in: 3 month
+      - dist/
