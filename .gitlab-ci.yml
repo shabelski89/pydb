@@ -1,21 +1,15 @@
+variables:
+  docker_image: pydb
+  docker_container: pydb
+
 stages:
   - build
 
 build-package:
-  tags:
-    - shell
   stage: build
   allow_failure: false
   script:
-    - apt-get update
-    - apt-get install -y python3-pip
-    - apt-get install -y build-essential libssl-dev libffi-dev python3-dev
-    - apt-get install -y python3-venv
-    - python3 -m pip install --upgrade pip
-    - pip install -r requirements.txt
-    - python3 -m pip install --upgrade build
-    - python3 -m build
-  artifacts:
-    paths:
-      - src/
-    expire_in: 3 month
+    - docker build -t $docker_image .
+    - docker run --network host --name $docker_container $docker_image
+  after_script:
+    - docker rm $docker_container
