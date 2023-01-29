@@ -10,8 +10,6 @@ build-package:
     - shell
   stage: build
   allow_failure: false
-  before_script:
-    - docker rm $docker_container
   script:
     - docker build -t $docker_image .
     - docker run --network host --name $docker_container $docker_image
