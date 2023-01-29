@@ -16,8 +16,3 @@ build-package:
   after_script:
     - docker cp $docker_container:/app/dist/ $CI_PROJECT_DIR
     - docker rm $docker_container
-    - ls $CI_PROJECT_DIR
-  artifacts:
-    expire_in: 1 week
-    paths:
-      - dist/
