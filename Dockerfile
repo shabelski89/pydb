@@ -10,7 +10,6 @@ RUN apt-get install -y build-essential libssl-dev libffi-dev python3-dev
 RUN apt-get install -y python3-venv
 
 RUN python -m pip install --upgrade pip
-RUN pip install --root-user-action=ignore requests
 RUN pip install -r requirements.txt
 
 RUN python -m pip install --upgrade build
