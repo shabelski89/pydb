@@ -6,8 +6,6 @@ stages:
   - build
 
 build-package:
-  cache:
-    key: cache-for-my-task-${CI_COMMIT_REF_SLUG}
   tags:
     - shell
   stage: build
