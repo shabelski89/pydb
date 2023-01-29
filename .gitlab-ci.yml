@@ -6,6 +6,8 @@ stages:
   - build
 
 build-package:
+  cache:
+    key: cache-for-my-task-${CI_COMMIT_REF_SLUG}
   tags:
     - shell
   stage: build
@@ -14,7 +16,9 @@ build-package:
     - docker build -t $docker_image .
     - docker run --network host --name $docker_container $docker_image
   after_script:
+    - docker cp $docker_container:dist/ /var/tmp/$docker_container
     - docker rm $docker_container
   artifacts:
+    expire_in: 1 week
     paths:
-      - dist/
+      - /var/tmp/$docker_container/dist
