@@ -20,7 +20,7 @@ except ModuleNotFoundError as Error:
 
 def query_cleaner(q: str):
     """Function formatting sql query"""
-    q = q.replace('\n', ' ').replace(';', ' ').replace('"', ' ')
+    q = q.replace('\n', ' ').replace('"', ' ').strip(';')
     query = " ".join(q.split())
     return query
 
