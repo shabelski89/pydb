@@ -18,13 +18,6 @@ except ModuleNotFoundError as Error:
     print(Error)
 
 
-def query_cleaner(q: str):
-    """Function formatting sql query"""
-    q = q.replace('\n', ' ').replace('"', ' ').strip(';')
-    query = " ".join(q.split())
-    return query
-
-
 class DbException(Exception):
     """
     Exception raised for errors in DataBase.
@@ -146,8 +139,6 @@ class UniDbConnector:
         """
         try:
             cursor = self.__connect.cursor()
-            query = query_cleaner(q=query)
-            print(f'query = {query}')
             if params:
                 cursor.execute(query, params)
             else:
