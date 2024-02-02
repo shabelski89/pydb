@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pydb",
-    version="1.2.7",
+    version="1.3.2",
     author='Aleksandr Shabelsky',
     author_email='a.shabelsky@gmail.com',
     description="Light CLI Oracle, Postgres, Mysql",
@@ -33,6 +33,9 @@ setup(
         "typing_extensions==4.1.1",
         "importlib-metadata==4.8.3",
         "prettytable==2.5.0",
+        "cffi==1.15.1",
+        "cryptography==40.0.2",
+        "pycparser==2.21",
     ],
     extras_require={
         "oracle": ["cx-Oracle==8.2.1"],

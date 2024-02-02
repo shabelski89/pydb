@@ -50,7 +50,7 @@ class SqlClient(cmd.Cmd):
             return True
 
     def _add_buffer(self, line: str):
-        self._buffer += ' ' + line.replace('\n',' ')
+        self._buffer += ' ' + line + '\n'
 
     def _clear_buffer(self):
         self._buffer = ''
