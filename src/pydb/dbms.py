@@ -66,8 +66,8 @@ class UniDbConnector:
         try:
             import psycopg2
             self.__dbError = psycopg2.DatabaseError
-        except ModuleNotFoundError as Error:
-            raise DbException(message=f"{Error}\nPlease install package - {self.dbms}")
+        except ModuleNotFoundError:
+            raise DbException(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
 
         self.config['dbname'] = self.db
         try:
@@ -82,8 +82,8 @@ class UniDbConnector:
         try:
             import pymysql
             self.__dbError = pymysql.DatabaseError
-        except ModuleNotFoundError as Error:
-            raise DbException(message=f"{Error}\nPlease install package - {self.dbms}")
+        except ModuleNotFoundError:
+            raise DbException(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
 
         self.config['db'] = self.db
         try:
@@ -98,8 +98,8 @@ class UniDbConnector:
         try:
             import cx_Oracle
             self.__dbError = cx_Oracle.DatabaseError
-        except ModuleNotFoundError as Error:
-            raise DbException(message=f"{Error}\nPlease install package - {self.dbms}")
+        except ModuleNotFoundError:
+            raise DbException(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
 
         try:
             if sys.platform.startswith("linux"):
