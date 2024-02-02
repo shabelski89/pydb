@@ -2,21 +2,6 @@ import os
 import sys
 from typing import List, Optional, Tuple
 
-try:
-    import pymysql
-except ModuleNotFoundError as Error:
-    print(Error)
-
-try:
-    import psycopg2
-except ModuleNotFoundError as Error:
-    print(Error)
-
-try:
-    import cx_Oracle
-except ModuleNotFoundError as Error:
-    print(Error)
-
 
 class DbException(Exception):
     """
@@ -24,8 +9,7 @@ class DbException(Exception):
     Attributes: message - explanation of the error
     """
     def __init__(self, message):
-        self.message = f"Error execute query - {message}"
-        super().__init__(self.message)
+        super().__init__(message)
 
 
 class ExecutionResponse:
@@ -69,6 +53,7 @@ class UniDbConnector:
         self.dbms: str = config.pop('dbms')
         self.db: str = config.pop('database')
         self.__connect = getattr(self, f"_get_connection_{self.dbms}")()
+        self.__dbError = Exception
 
     def __enter__(self):
         return self
@@ -78,26 +63,44 @@ class UniDbConnector:
 
     def _get_connection_postgres(self):
         """Connect to a Postgres database."""
+        try:
+            import psycopg2
+            self.__dbError = psycopg2.DatabaseError
+        except ModuleNotFoundError as Error:
+            raise DbException(message=f"{Error}\nPlease install package - {self.dbms}")
+
         self.config['dbname'] = self.db
         try:
             self.__connect = psycopg2.connect(**self.config)
             self.__connect.autocommit = True
             return self.__connect
         except psycopg2.DatabaseError as Error:
-            raise DbException(message=Error)
+            raise DbException(message=f"Connection Error: {Error}")
 
     def _get_connection_mysql(self):
         """Connect to a MySQL database."""
+        try:
+            import pymysql
+            self.__dbError = pymysql.DatabaseError
+        except ModuleNotFoundError as Error:
+            raise DbException(message=f"{Error}\nPlease install package - {self.dbms}")
+
         self.config['db'] = self.db
         try:
             self.__connect = pymysql.connect(**self.config)
             self.__connect.autocommit = True
             return self.__connect
         except pymysql.DatabaseError as Error:
-            raise DbException(message=Error)
+            raise DbException(message=f"Connection Error: {Error}")
 
     def _get_connection_oracle(self):
         """Connect to a Oracle database."""
+        try:
+            import cx_Oracle
+            self.__dbError = cx_Oracle.DatabaseError
+        except ModuleNotFoundError as Error:
+            raise DbException(message=f"{Error}\nPlease install package - {self.dbms}")
+
         try:
             if sys.platform.startswith("linux"):
                 lib_dir = os.environ.get("LD_LIBRARY_PATH")
@@ -130,7 +133,7 @@ class UniDbConnector:
             return self.__connect
 
         except cx_Oracle.DatabaseError as Error:
-            raise DbException(message=Error)
+            raise DbException(message=f"Connection Error: {Error}")
 
     def execute(self, query: str, params: tuple = None):
         """
@@ -143,8 +146,8 @@ class UniDbConnector:
                 cursor.execute(query, params)
             else:
                 cursor.execute(query)
-        except (cx_Oracle.DatabaseError, pymysql.DatabaseError, psycopg2.DatabaseError) as Error:
-            raise DbException(message=Error)
+        except self.__dbError as Error:
+            raise DbException(message=f"Execution Error: {Error}")
         return cursor
 
     def fetchmany(self, query: str, params: tuple = None, size=10000) -> tuple:

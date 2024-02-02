@@ -35,9 +35,11 @@ pip install -r requirements.txt --no-index --find-links file:///path/to/packages
 
 ### pip
 1. Download `pydb-x.y.z-py3-none-any.whl`
-2. Install use pip
+2. Upgrade pip
+3. Install use pip
 
 ```shell
+pip install --upgrade pip
 pip install pydb-x.y.z-py3-none-any.whl
 ```
 
