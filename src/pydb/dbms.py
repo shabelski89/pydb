@@ -3,7 +3,7 @@ import sys
 from typing import List, Optional, Tuple
 
 
-class DbException(Exception):
+class DatabaseError(Exception):
     """
     Exception raised for errors in DataBase.
     Attributes: message - explanation of the error
@@ -46,7 +46,7 @@ class UniDbConnector:
         "user": DB Username,
         "password": DB password,
         "database": DB/SCHEMA name,
-        "dbms": DBMS Vendor ['mysql', 'oracle', 'postgres']
+        "dbms": DBMS Vendor ['mysql', 'oracle', 'postgres', 'mssql']
         }
         """
         self.config: dict = config
@@ -67,7 +67,7 @@ class UniDbConnector:
             import psycopg2
             self.__dbError = psycopg2.DatabaseError
         except ModuleNotFoundError:
-            raise DbException(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
+            raise DatabaseError(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
 
         self.config['dbname'] = self.db
         try:
@@ -75,7 +75,7 @@ class UniDbConnector:
             self.__connect.autocommit = True
             return self.__connect
         except psycopg2.DatabaseError as Error:
-            raise DbException(message=f"Connection Error: {Error}")
+            raise DatabaseError(message=f"Connection Error: {Error}")
 
     def _get_connection_mysql(self):
         """Connect to a MySQL database."""
@@ -83,7 +83,7 @@ class UniDbConnector:
             import pymysql
             self.__dbError = pymysql.DatabaseError
         except ModuleNotFoundError:
-            raise DbException(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
+            raise DatabaseError(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
 
         self.config['db'] = self.db
         try:
@@ -91,7 +91,7 @@ class UniDbConnector:
             self.__connect.autocommit = True
             return self.__connect
         except pymysql.DatabaseError as Error:
-            raise DbException(message=f"Connection Error: {Error}")
+            raise DatabaseError(message=f"Connection Error: {Error}")
 
     def _get_connection_oracle(self):
         """Connect to a Oracle database."""
@@ -99,7 +99,7 @@ class UniDbConnector:
             import cx_Oracle
             self.__dbError = cx_Oracle.DatabaseError
         except ModuleNotFoundError:
-            raise DbException(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
+            raise DatabaseError(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
 
         try:
             if sys.platform.startswith("linux"):
@@ -109,7 +109,7 @@ class UniDbConnector:
                 lib_dir = os.environ.get("ORACLE_HOME")  # WINDOWS ENV PATH NOT TESTED!
                 cx_Oracle.init_oracle_client(lib_dir=lib_dir)
         except Exception as Error:
-            raise DbException(message=Error)
+            raise DatabaseError(message=Error)
 
         try:
             try:
@@ -133,12 +133,46 @@ class UniDbConnector:
             return self.__connect
 
         except cx_Oracle.DatabaseError as Error:
-            raise DbException(message=f"Connection Error: {Error}")
+            raise DatabaseError(message=f"Connection Error: {Error}")
+
+    def _get_connection_mssql(self):
+        """Connect to a MsSql database."""
+        try:
+            import jaydebeapi
+            self.__dbError = jaydebeapi.DatabaseError
+        except ModuleNotFoundError:
+            raise DatabaseError(message=f"ModuleNotFoundError: Driver for {self.dbms} not found!")
+
+        try:
+            os.environ.get("JAVA_HOME")
+            # ToDo - check JAR file
+            driver_jar_file = self.config.get('driver', r"C:\Users\ashab\.m2\repository\com\microsoft\sqlserver\mssql-jdbc\12.2.0.jre8\mssql-jdbc-12.2.0.jre8.jar")
+            driver_class = self.config.get('driver_class', 'com.microsoft.sqlserver.jdbc.SQLServerDriver')
+        except FileNotFoundError:
+            raise DatabaseError(message=f'FileNotFoundError: driver_jar_file not found!')
+        except Exception as Error:
+            raise DatabaseError(message=Error)
+
+        base_jdbc_url = f"jdbc:sqlserver://;serverName={self.config.get('host')};portNumber={self.config.get('port')};databaseName={self.config.get('database')}"
+        # ToDo - add parse args to include this !!!
+        driver_args = 'authenticationScheme=NTLM;integratedSecurity=true;sslProtocol=TLS;trustServerCertificate=true;domain=ur.rt.ru;'
+        try:
+            self.__connect = jaydebeapi.connect(
+                driver_class,
+                ";".join([base_jdbc_url, driver_args]),
+                {'user': self.config.get('user'), 'password': self.config.get('password')},
+                driver_jar_file
+            )
+            self.__connect.autocommit = True
+            return self.__connect
+
+        except self.__dbError as Error:
+            raise DatabaseError(message=f"Connection Error: {Error}")
 
     def execute(self, query: str, params: tuple = None):
         """
         Method to execute sql query
-        :raise cx_Oracle.DatabaseError, pymysql.DatabaseError, psycopg2.DatabaseError: raised when any DB error
+        :raise DatabaseError
         """
         try:
             cursor = self.__connect.cursor()
@@ -147,7 +181,7 @@ class UniDbConnector:
             else:
                 cursor.execute(query)
         except self.__dbError as Error:
-            raise DbException(message=f"Execution Error: {Error}")
+            raise DatabaseError(message=f"Execution Error: {Error}")
         return cursor
 
     def fetchmany(self, query: str, params: tuple = None, size=10000) -> tuple:

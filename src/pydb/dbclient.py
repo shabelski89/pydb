@@ -97,6 +97,8 @@ def main():
         dbms=connection_parse_args.scheme
     )
 
+    #ToDo - add check allowed dbms
+
     db = UniDbConnector(config=cfg)
     client = SqlClient(db=db)
 
