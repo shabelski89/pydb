@@ -1,14 +1,15 @@
 from setuptools import setup, find_packages
 
+
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name="pydb",
-    version="1.3.2",
+    version="1.4.0",
     author='Aleksandr Shabelsky',
     author_email='a.shabelsky@gmail.com',
-    description="Light CLI Oracle, Postgres, Mysql",
+    description="Light CLI Oracle, Postgres, Mysql, Mssql",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="http://gitlab.seventest/sa/pydb",
@@ -21,7 +22,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    packages=find_packages(where="src"),
+    packages=find_packages(where='src'),
     python_requires=">=3.6",
     install_requires=[
         "colorama==0.4.4",
@@ -38,13 +39,14 @@ setup(
         "pycparser==2.21",
     ],
     extras_require={
-        "oracle": ["cx-Oracle==8.2.1"],
-        "postgres": ["psycopg2==2.9.1"],
+        "oracle": ["oracledb==1.4.2"],
+        "postgres": ["psycopg2-binary==2.9.1"],
         "mysql": ["PyMySQL==1.0.2"],
+        "mssql": ["JayDeBeApi==1.2.3"],
     },
     entry_points={
         'console_scripts': [
-            'dbclient = pydb.dbclient:main',
+            'pydb = pydb.main:main',
         ]
     },
 )
