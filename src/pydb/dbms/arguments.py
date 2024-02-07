@@ -1,6 +1,13 @@
 from urllib.parse import urlparse
 from .constants import DBMS
-from .exceptions import DbArgumentError
+from ..exceptions import BaseDbException
+
+
+class DbArgumentError(BaseDbException):
+    """
+    Exception raised for errors in Arguments.
+    """
+    pass
 
 
 class DbArgumentParser:

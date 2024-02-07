@@ -3,6 +3,9 @@ import argparse
 from .dbms.constants import DBMS
 from .dbms.object_factory import database_factory
 from .client import CmdClient
+from .reader import Reader
+from .exporter import Exporter
+from .exporter import SqlScriptExporter
 
 
 def check_argv(value: str) -> bool:
@@ -74,7 +77,10 @@ def main():
             client.close()
     else:
         print('Non Interactive mode')
-        raise NotImplementedError  # ToDo add db executor client and exporter
+        reader = Reader(cli_args.input)
+        exporter = Exporter(cli_args.output)
+        script_exporter = SqlScriptExporter(db, reader, exporter)
+        script_exporter.export()
 
 
 if __name__ == '__main__':

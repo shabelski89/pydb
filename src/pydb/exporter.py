@@ -2,6 +2,9 @@ import os
 import csv
 from datetime import datetime
 from .dbms.connector import ExecutionResponse
+from .dbms.connector import UniDbConnector
+from .reader import Reader
+from .exceptions import BaseDbException
 
 
 class Exporter:
@@ -50,3 +53,27 @@ class Exporter:
     def set_line_count(self):
         if self.line_count:
             self.line_count = 0
+
+
+class SqlScriptExporterError(BaseDbException):
+    """
+    Exception raised for errors in SqlScriptExporter.
+    """
+    pass
+
+class SqlScriptExporter:
+    def __init__(self, connector: UniDbConnector, reader: Reader, exporter: Exporter):
+        self.connector = connector
+        self.reader = reader
+        self.exporter = exporter
+
+
+    def export(self):
+        try:
+            for query in self.reader:
+                with self.connector as con:
+                    data = con.fetchall(query=query)
+                    if data:
+                        self.exporter.to_csv(data=data)
+        except Exception as Error:
+            raise SqlScriptExporterError(f'SqlScriptExporter: {Error}')
