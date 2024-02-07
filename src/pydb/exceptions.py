@@ -14,16 +14,3 @@ class BaseDbException(Exception):
             ln = inspect.currentframe().f_back.f_lineno
         self.args = f"{type(self).__name__} (line {ln}): {message}",
         sys.exit(self)
-
-class DbArgumentError(BaseDbException):
-    """
-    Exception raised for errors in Arguments.
-    """
-    pass
-
-
-class DatabaseError(BaseDbException):
-    """
-    Exception raised for errors in DataBase Driver.
-    """
-    pass

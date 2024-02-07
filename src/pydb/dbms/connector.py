@@ -1,6 +1,13 @@
 from typing import List, Optional, Tuple
 from abc import ABC, abstractmethod
-from .exceptions import DatabaseError
+from ..exceptions import BaseDbException
+
+
+class DatabaseError(BaseDbException):
+    """
+    Exception raised for errors in DataBase Driver.
+    """
+    pass
 
 
 class ExecutionResponse:
