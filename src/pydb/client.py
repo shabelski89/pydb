@@ -1,23 +1,28 @@
-import os
-import sys
 import cmd
 import time
-import argparse
-from urllib.parse import urlparse
-from prettytable import from_db_cursor, PrettyTable
-try:
-    from dbms import UniDbConnector
-except ModuleNotFoundError:
-    from .dbms import UniDbConnector
+from prettytable import PrettyTable
+from prettytable import from_db_cursor
+from .dbms.connector import UniDbConnector
 
 
-class SqlClient(cmd.Cmd):
+class CmdClient(cmd.Cmd):
+    __DEFAULT_PROMPT = 'SQL> '
+    __ONINPUT_PROMPT = '> '
     def __init__(self, db: UniDbConnector):
         super().__init__()
-        self.prompt = 'SQL> '
+        self.prompt = self.__DEFAULT_PROMPT
         self.delimiter = '=' * 40
-        self.db = db
         self._buffer = ''
+        self.db = db
+
+        self.db.connect()
+
+    def _connect(self):
+        try:
+            self.db.connect()
+        except Exception as Error:
+            print(Error)
+            self.close()
 
     def emptyline(self):
         pass
@@ -50,13 +55,15 @@ class SqlClient(cmd.Cmd):
             return True
 
     def _add_buffer(self, line: str):
+        self.prompt = self.__ONINPUT_PROMPT
         self._buffer += ' ' + line + '\n'
 
     def _clear_buffer(self):
         self._buffer = ''
+        self.prompt = self.__DEFAULT_PROMPT
 
     def help_execute(self):
-        print(f'{self.delimiter}\nType: SELECT * FROM table;')
+        print(f'{self.delimiter}\nType: SELECT * FROM table;\n{self.delimiter}')
 
     def execute(self, query: str):
         """
@@ -69,42 +76,15 @@ class SqlClient(cmd.Cmd):
             cursor = self.db.execute(query=query)
             return cursor
         except Exception as Error:
-            print(f'{self.delimiter}\nError: {Error}')
+            print(f'{self.delimiter}\nError: {Error}\n{self.delimiter}')
 
     def do_exit(self, line):
         print(line)
-        print(f'{self.delimiter}\nGoodbye!')
+        print(f'{self.delimiter}\nGoodbye!\n{self.delimiter}')
         return True
 
     def help_exit(self):
-        print(f'{self.delimiter}\nInput exit or Ctrl+C to quit')
+        print(f'{self.delimiter}\nInput exit or Ctrl+C to quit\n{self.delimiter}')
 
-
-def main():
-    program_name = os.path.basename(sys.argv[0])
-    help_msg = f'{program_name} -c "postgres://user:password@hostname:port/database"'
-    arg_parser = argparse.ArgumentParser(description=program_name, formatter_class=argparse.RawTextHelpFormatter)
-    arg_parser.add_argument("-c", dest="connection", required=True, type=str, help=help_msg)
-    args = arg_parser.parse_args()
-
-    connection_parse_args = urlparse(args.connection)
-    cfg = dict(
-        host=connection_parse_args.hostname,
-        port=connection_parse_args.port,
-        user=connection_parse_args.username,
-        password=connection_parse_args.password,
-        database=connection_parse_args.path.lstrip("/"),
-        dbms=connection_parse_args.scheme
-    )
-
-    db = UniDbConnector(config=cfg)
-    client = SqlClient(db=db)
-
-    try:
-        client.cmdloop()
-    except KeyboardInterrupt:
-        print('Goodbye!')
-
-
-if __name__ == '__main__':
-    main()
+    def close(self):
+        self.do_exit(self.prompt)

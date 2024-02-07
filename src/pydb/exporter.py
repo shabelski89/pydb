@@ -1,7 +1,7 @@
 import os
 import csv
 from datetime import datetime
-from dbms import ExecutionResponse
+from .dbms.connector import ExecutionResponse
 
 
 class Exporter:
