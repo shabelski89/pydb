@@ -51,10 +51,10 @@ def main():
             break
 
         if DBMS.ORACLE in arg:
-            required_group.add_argument('-m', dest="thin_mode", required=False, type=bool, default=True,
+            required_group.add_argument('-m', dest="thin_mode", required=False, action="store_false",
                                     help='oracledb Thin mode default=%(default)s, set False to switch into Thick mode, '
                                          'read more - https://python-oracledb.readthedocs.io/en/latest/user_guide/initialization.html')
-            required_group.add_argument('-l', dest="lib_dir", required=check_argv("-m"), type=bool,
+            required_group.add_argument('-l', dest="lib_dir", required=check_argv("-m"), type=str,
                                     help='path to oracle instantclient, '
                                          'read more - https://python-oracledb.readthedocs.io/en/latest/user_guide/installation.html#id3')
             break

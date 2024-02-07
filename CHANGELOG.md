@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1] - 2024-02-07
+### Fixed
+- аргумент -m для oracle хранит bool
+- lib_dir извлекается из конфига до oracle.connect() 
+### Changed
+- CHANGELOG переименован для поддержки MarkDown
+
 ## [1.4.0] - 2024-02-06
 ### Added
 - поддержка Sqlserver (NTLM only)

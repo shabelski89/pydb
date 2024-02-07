@@ -54,9 +54,10 @@ class OracleConnector(UniDbConnector):
             import oracledb
             self._dbError = oracledb.DatabaseError
 
-            if self.thin_mode is False and self.config.get('lib_dir') is not None:
-                oracledb.init_oracle_client(lib_dir=self.config.pop('lib_dir'))
-            elif self.thin_mode is False and self.config.get('lib_dir') is None:
+            lib_dir = self.config.pop('lib_dir', None)
+            if self.thin_mode is False and lib_dir is not None:
+                oracledb.init_oracle_client(lib_dir=lib_dir)
+            elif self.thin_mode is False and lib_dir is None:
                 oracledb.init_oracle_client()
 
         except ModuleNotFoundError:
