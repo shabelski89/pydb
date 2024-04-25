@@ -13,4 +13,3 @@ class BaseDbException(Exception):
         except AttributeError:
             ln = inspect.currentframe().f_back.f_lineno
         self.args = f"{type(self).__name__} (line {ln}): {message}",
-        sys.exit(self)
