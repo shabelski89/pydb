@@ -8,6 +8,7 @@ from .dbms.connector import UniDbConnector
 class CmdClient(cmd.Cmd):
     __DEFAULT_PROMPT = 'SQL> '
     __ONINPUT_PROMPT = '> '
+
     def __init__(self, db: UniDbConnector):
         super().__init__()
         self.prompt = self.__DEFAULT_PROMPT
