@@ -18,13 +18,6 @@ class CmdClient(cmd.Cmd):
 
         self.db.connect()
 
-    def _connect(self):
-        try:
-            self.db.connect()
-        except Exception as Error:
-            print(Error)
-            self.close()
-
     def emptyline(self):
         pass
 
