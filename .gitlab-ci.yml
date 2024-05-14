@@ -19,3 +19,7 @@ build-package:
   only:
     refs:
       - master
+  artifacts:
+    expire_in: 2 hrs
+    paths:
+      - build/ 
