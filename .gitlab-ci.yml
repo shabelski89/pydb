@@ -22,4 +22,4 @@ build-package:
   artifacts:
     expire_in: 2 hrs
     paths:
-      - $CI_PROJECT_DIR
+      - $CI_PROJECT_DIR/dist
