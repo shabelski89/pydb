@@ -33,8 +33,9 @@ class CmdClient(cmd.Cmd):
                 table: PrettyTable = from_db_cursor(cursor)
                 table.align = "l"
                 time_of_execute = time.time() - time_begin_execute
+                rows_count = len(table.rows) if len(table.rows) is not None else cursor.rowcount
                 print(table)
-                print(f'Rows: {cursor.rowcount}')
+                print(f'Rows: {rows_count}')
                 print(f'Time: {time_of_execute:.2f}')
 
     def _check_query(self, line: str):

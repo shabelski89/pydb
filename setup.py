@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pydb",
-    version="1.4.3",
+    version="1.4.4",
     author='Aleksandr Shabelsky',
     author_email='a.shabelsky@gmail.com',
     description="Light CLI Oracle, Postgres, Mysql, Mssql",
