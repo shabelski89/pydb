@@ -43,14 +43,6 @@ pip install --upgrade pip
 pip install pydb-x.y.z-py3-none-any.whl
 ```
 
-### setup
-1. Clone or copy repository
-2. Install
-
-```shell
-python3 setup.py install
-```
-
 > NOTE: `x`.`y`.`z` equal pydb package version.
 
 # Usage package
