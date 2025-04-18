@@ -37,17 +37,8 @@ jobs:
           name: dist
           path: dist/
 
-      # Публикация пакета в TestPyPI
-      - name: Publish to TestPyPI (on push)
-        if: github.event_name == 'push'
-        run: twine upload --repository testpypi dist/* --skip-existing
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
-
       # Публикация пакета в PyPI
       - name: Publish to PyPI (on release)
-        if: github.event_name == 'release'
         run: twine upload dist/* --skip-existing
         env:
           TWINE_USERNAME: __token__
