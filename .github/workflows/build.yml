@@ -3,6 +3,8 @@ name: Build and Publish Package
 on:
   push:
     branches: [ "master" ]
+  release:
+    types: [published]
 
 jobs:
   build-package:
@@ -11,7 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Установка Python и зависимостей
+      - name: Clean previous builds
+        run: rm -rf dist/
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -20,13 +24,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build twine
 
-      # Сборка пакета (без Docker)
       - name: Build package
         run: python -m build
 
-      # Сохранение пакета
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -48,10 +49,3 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-
-      # Очистка Docker (если всё же нужен Docker)
-      - name: Cleanup Docker
-        if: always()
-        run: |
-          docker rm -f pydb || true
-          docker rmi pydb || true
