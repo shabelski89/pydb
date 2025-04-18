@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.1] - 2025-04-18
+### Changed
+- fix github workflows
+
 ## [1.5.0] - 2025-04-18
 ### Changed
 - замена setup.py на pyproject.toml
