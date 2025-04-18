@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="pydb",
+    name="uni-pydb",
     version="1.4.4",
     author='Aleksandr Shabelsky',
     author_email='a.shabelsky@gmail.com',
