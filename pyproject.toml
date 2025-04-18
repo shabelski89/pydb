@@ -1,5 +1,5 @@
 [project]
-name = "uni-pydb"
+name = "xdbcli"
 version = "1.5.1"
 description="Light CLI Oracle, Postgres, Mysql, Mssql"
 readme = "README.md"
