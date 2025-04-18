@@ -1,0 +1,39 @@
+name: Build Package
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t pydb .
+
+      - name: Run Docker container
+        run: docker run --network host --name pydb pydb
+
+      - name: Copy artifacts from container
+        run: |
+          docker cp pydb:/app/dist/ .
+          docker rm pydb
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
+
+      - name: Cleanup Docker container
+        if: always()
+        run: docker rm -f pydb || true
+
+      - name: Publish to TestPyPI
+        run: twine upload --repository testpypi dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
