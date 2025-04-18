@@ -26,31 +26,25 @@ jobs:
       - name: Build package
         run: python -m build
 
-      # Исправленная версия upload-artifact
+      # Сохранение пакета
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
 
-      # Публикация в TestPyPI
-      - name: Publish to TestPyPI
-        run: |
-          twine upload --repository testpypi dist/* --verbose
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
-
+      # Публикация пакета в TestPyPI
       - name: Publish to TestPyPI (on push)
         if: github.event_name == 'push'
-        run: twine upload --repository testpypi dist/*
+        run: twine upload --repository testpypi dist/* --skip-existing
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
 
+      # Публикация пакета в PyPI
       - name: Publish to PyPI (on release)
         if: github.event_name == 'release'
-        run: twine upload dist/*
+        run: twine upload dist/* --skip-existing
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
