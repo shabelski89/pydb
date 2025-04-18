@@ -1,4 +1,4 @@
-name: Build Package
+name: Build and Publish Package
 
 on:
   push:
@@ -11,29 +11,38 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t pydb .
+      # Установка Python и зависимостей
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
-      - name: Run Docker container
-        run: docker run --network host --name pydb pydb
-
-      - name: Copy artifacts from container
+      - name: Install dependencies
         run: |
-          docker cp pydb:/app/dist/ .
-          docker rm pydb
+          python -m pip install --upgrade pip
+          pip install build twine
 
+      # Сборка пакета (без Docker)
+      - name: Build package
+        run: python -m build
+
+      # Исправленная версия upload-artifact
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
 
-      - name: Cleanup Docker container
-        if: always()
-        run: docker rm -f pydb || true
-
+      # Публикация в TestPyPI
       - name: Publish to TestPyPI
         run: twine upload --repository testpypi dist/*
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+
+      # Очистка Docker (если всё же нужен Docker)
+      - name: Cleanup Docker
+        if: always()
+        run: |
+          docker rm -f pydb || true
+          docker rmi pydb || true
